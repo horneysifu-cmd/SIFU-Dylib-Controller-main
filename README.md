@@ -10,18 +10,21 @@ A license-management dashboard and API for software you own or are authorized to
 - [x] Device activation, validation, listing and blocking
 - [x] Basic per-IP throttling for public activation/validation
 - [x] Audit log records for key admin and license actions
-- [ ] Automated backend tests and dashboard end-to-end tests
+- [x] Initial automated backend API regression tests
+- [ ] Dashboard end-to-end tests
 - [ ] Dylib login/activation client
 - [ ] Signed update manifest and release flow
 - [ ] Production deployment and security review
 
-The dashboard and API source are committed, but the service is not deployed. Configure the backend environment and run it locally before connecting the dashboard.
+The dashboard and API source are committed, but the service is not deployed. The tests have been added to the repository but have not yet been executed in a runtime environment.
 
 ## Project layout
 
 - `dashboard/index.html` — responsive admin dashboard
 - `backend/main.py` — FastAPI service and SQLite data model
-- `backend/requirements.txt` — Python dependencies
+- `backend/requirements.txt` — runtime Python dependencies
+- `backend/requirements-dev.txt` — test dependencies
+- `backend/tests/test_api.py` — API regression tests
 - `backend/.env.example` — environment variable template
 
 ## Run the backend locally
@@ -53,6 +56,17 @@ The dashboard and API source are committed, but the service is not deployed. Con
 
 Interactive API docs are disabled by default. Set `ENABLE_DOCS=true` only during development if you need `/docs`.
 
+## Run backend tests
+
+From the `backend` directory, install the development dependencies and run:
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q
+```
+
+The initial suite checks health, admin-token protection, license activation/validation, device limits, blocked devices, and banned licenses. These tests are committed but still need to be run on a machine with Python dependencies installed.
+
 ## API routes
 
 Admin routes require `Authorization: Bearer <ADMIN_TOKEN>`.
@@ -67,8 +81,8 @@ Admin routes require `Authorization: Bearer <ADMIN_TOKEN>`.
 
 Public client routes accept JSON bodies and are rate-limited per IP:
 
-- `POST /api/license/activate` — `{"license_key":"…","device_ref":"…"}`
-- `POST /api/license/validate` — `{"license_key":"…","device_ref":"…"}`
+- `POST /api/license/activate` — `{"license_key":"…","device_ref":"…" }`
+- `POST /api/license/validate` — `{"license_key":"…","device_ref":"…" }`
 
 ## Security notes
 
