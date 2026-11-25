@@ -50,7 +50,7 @@ curl -fsS http://127.0.0.1:8765/health
 
 Publish the dashboard with a separate Nginx site. Replace YOUR_HOSTNAME with the hostname you control:
 ```bash
-sudo mkdir -p /var/www/sifu-dylib-controller
+sudo mkdir -p /var/www/sifu-dylib-controller/dashboard
 sudo cp -a /opt/sifu-dylib-controller/dashboard/. /var/www/sifu-dylib-controller/dashboard/
 sudo sed 's/YOUR_HOSTNAME/your.hostname.example/g' /opt/sifu-dylib-controller/deploy/nginx.conf.example | sudo tee /etc/nginx/sites-available/sifu-dylib-controller
 sudo ln -s /etc/nginx/sites-available/sifu-dylib-controller /etc/nginx/sites-enabled/sifu-dylib-controller
