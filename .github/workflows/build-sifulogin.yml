@@ -1,0 +1,51 @@
+name: Build SIFULogin Dylib
+
+on:
+  push:
+    branches:
+      - sifu-login-dylib-build
+    paths:
+      - "client/SIFULogin/**"
+      - ".github/workflows/build-sifulogin.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Debian build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bash curl sudo
+
+      - name: Install Theos and iOS SDK
+        shell: bash
+        run: |
+          export THEOS="$HOME/theos"
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
+          echo "THEOS=$HOME/theos" >> "$GITHUB_ENV"
+
+      - name: Build ARM64 dylib
+        working-directory: client/SIFULogin
+        run: |
+          make clean || true
+          make
+          mkdir -p ../../build-output
+          DYLIB="$(find . -type f -name 'SIFULogin.dylib' -print -quit)"
+          test -n "$DYLIB"
+          cp "$DYLIB" ../../build-output/SIFULogin.dylib
+          file ../../build-output/SIFULogin.dylib
+
+      - name: Upload dylib artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SIFULogin-dylib-arm64
+          path: build-output/SIFULogin.dylib
+          if-no-files-found: error
+          retention-days: 14
